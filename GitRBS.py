@@ -104,12 +104,6 @@ for link in soup.findAll('a', attrs={'href': re.compile("^/" + username + "/" + 
     files.append(link.get('href'))
 for link in soup.findAll('a', attrs={'href': re.compile("^/" + username + "/" + repnm + "/tree")}):
     trees.append(link.get('href'))
-print("Files: ")
-for number,letter in enumerate(files): 
-    print(letter)
-print("Trees: ")
-for number,letter in enumerate(trees): 
-    print(letter)
 branch = ((files[0]).split('/'))[-2]
 print("Assuming current branch is: " + branch)
 unpack(branch,files,rep,trees)
