@@ -1,9 +1,41 @@
 import os
-ver = "GitRBS 0.0.0.0"
+ver = "GitRBS 0.0.0.2"
 def mgs_bs4local():
     exit()
-def unpack(branch,files):
+def nextunpack(branch,files,rep,trees):
+    linksplit = rep.split('/')
+    repnm = linksplit[4]
+    if len(trees) == 0:
+        print("Finished backing up: " + repnm)
+        print("Press any key to exit.")
+        input()
+        exit()
+    for number,letter in enumerate(trees):
+        if branch in letter:
+            trees.remove(letter)
+        else:
+            continue
+    try:
+        branch = ((trees[0]).split('/'))[-1]
+    except:
+        print("Finished backing up: " + repnm)
+        print("Press any key to exit.")
+        input()
+        exit()
+    repx = (rep + "/tree/" + branch)
+    files.clear()
+    html_page = urllib.request.urlopen(repx)
+    soup = BeautifulSoup(html_page, features="html.parser")
+    for link in soup.findAll('a', attrs={'href': re.compile("^/" + username + "/" + repnm + "/blob/" + branch)}):
+        files.append(link.get('href'))
+    unpack(branch,files,rep,trees)
+def unpack(branch,files,rep,trees):
     print("Downloading files in current branch: " + branch)
+    if len(branch) > 12:
+        print("GitRBS thinks the repo '" + branch + "' does not need to be backed up.")
+        doBackup = input("Should GitRBS back up this repo? [y/n] ")
+        if not doBackup == "y":
+            nextunpack(branch,files,rep,trees)
     if os.path.exists(branch):
         os.chdir(branch)
     else:
@@ -19,8 +51,6 @@ def unpack(branch,files):
         except:
             try:
                 downfile = ("https://raw.githubusercontent.com" + letterfix)
-                print(downfile)
-                input()
                 filenm = ((letter.split('/')[-1]))
                 urllib.request.urlretrieve(downfile, filenm)
             except:
@@ -31,7 +61,9 @@ def unpack(branch,files):
                 backupwrite.close()
         except:
             print("Failed to backup: " + ((letter.split('/')[-1])))
-    print("Finished.")
+    print("Finished downloading: " + branch + ".")
+    os.chdir('..')
+    nextunpack(branch,files,rep,trees)
     exit()
 try:
     from bs4 import *
@@ -80,4 +112,4 @@ for number,letter in enumerate(trees):
     print(letter)
 branch = ((files[0]).split('/'))[-2]
 print("Assuming current branch is: " + branch)
-unpack(branch,files)
+unpack(branch,files,rep,trees)
