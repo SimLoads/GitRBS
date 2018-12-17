@@ -12,6 +12,10 @@ Just input a link to a repository and let GitRBS do the work.
 
 Features that are in development include:
 
-Wiki backup
-Branch folder backup
-Non-text file backup
+1) Wiki backup
+
+
+2) Branch folder backup
+
+
+3) Non-text file backup
